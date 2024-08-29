@@ -1,7 +1,7 @@
 /* eslint-disable no-undef */
 /* eslint-disable no-unused-vars */
 /* eslint-disable indent */
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 //import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import Select from "react-select";
@@ -27,6 +27,9 @@ import Selects from "./Select";
 import Swal from "sweetalert2/dist/sweetalert2";
 import logout from "../../assets/img/logout.png";
 import IdeaSubmissionCard from "../../components/IdeaSubmissionCard";
+import { useReactToPrint } from 'react-to-print';
+import Ideapdf from './DetailToDownload';
+import { FaKey } from 'react-icons/fa';
 
 const TeamsProgDD = ({ user, setApproval, setIdeaCount }) => {
   const [ideaShow, setIdeaShow] = useState(false);
@@ -505,7 +508,53 @@ const TeamsProgDD = ({ user, setApproval, setIdeaCount }) => {
       setIsreject(false);
     }
   };
-// console.log(formData,"ddd");
+  const [mentorValuesForPDF, setMentorValuesForPDF] = useState();
+  const mentorDataforPDF = () => {
+      const mentorDataApi = encryptGlobal(
+          JSON.stringify({
+              team_id : 77
+          })
+      );
+      var config = {
+          method: 'get',
+          url:
+              process.env.REACT_APP_API_BASE_URL +
+              `/challenge_response/submittedDetailsforideapdf?Data=${mentorDataApi}`,
+          headers: {
+              'Content-Type': 'application/json',
+              Accept: 'application/json',
+              Authorization: `Bearer ${currentUser.data[0]?.token}`
+          }
+      };
+      axios(config)
+          .then(function (response) {
+              if (response.status === 200) {
+
+                  setMentorValuesForPDF(response?.data?.data[0]);
+              }
+          })
+          .catch(function (error) {
+              console.log(error);
+          });
+  };
+  useEffect(() => {
+    if (mentorValuesForPDF !== undefined) {
+        handlePrint();
+        console.log('printcontinue');
+    } else {
+        console.log("Some PDF printing related api's are failing");
+    }
+}, [mentorValuesForPDF]);
+
+const tsetcall = () => {
+    mentorDataforPDF();
+};
+
+const componentRef = useRef();
+const handlePrint = useReactToPrint({
+    content: () => componentRef.current
+});
+
   return (
     <div>
       <div className="card table-list-card">
@@ -595,6 +644,16 @@ const TeamsProgDD = ({ user, setApproval, setIdeaCount }) => {
                       onClick={() => setIdeaShow(true)}
                     />
                   )}
+                  <div style={{ display: 'none' }}>
+                    <Ideapdf
+                      ref={componentRef}
+                      ideaDetails={mentorValuesForPDF}
+                      level={'Draft'}
+                    /> 
+                  </div>
+                  <div className="dash-imgs" onClick={tsetcall}>
+                    <FaKey />
+                  </div>
                 </div>
                 {/* <div className="m-3">
                                     {formData?.status !==
