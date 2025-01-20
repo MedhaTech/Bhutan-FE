@@ -59,6 +59,8 @@ jobs:
           echo "$PRIVATE_KEY" > private_key && chmod 400 private_key
           scp -o StrictHostKeyChecking=no -i private_key -r ./build ubuntu@${{ secrets.Bhutan_HOSTNAME }}:/tmp/bhutan_build
           ssh -o StrictHostKeyChecking=no -i private_key ubuntu@${{ secrets.Bhutan_HOSTNAME }} '
+            sudo rm -rf /var/www/html/Bhutan-FE/build &&
+            sudo mv /tmp/bhutan_build /var/www/html/Bhutan-FE/build &&
             cd /var/www/html/Bhutan-FE &&
             sudo git fetch origin &&
             sudo git checkout development &&
