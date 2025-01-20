@@ -85,15 +85,13 @@ jobs:
       - name: Deploy to Development
         if: github.ref == 'refs/heads/development'
         env:
-          PRIVATE_KEY: ${{ secrets.ATL2_PRIVATE_KEY }}
-          HOSTNAME: ${{ secrets.ATL2_HOSTNAME }}
+          PRIVATE_KEY: ${{ secrets.Bhutan_PRIVATE_KEY }}
+          HOSTNAME: ${{ secrets.Bhutan_HOSTNAME }}
         run: |
           echo "$PRIVATE_KEY" > private_key && chmod 400 private_key
-          scp -o StrictHostKeyChecking=no -i private_key -r ./build ubuntu@${{ secrets.ATL2_HOSTNAME }}:/tmp/aim_fe_build
-          ssh -o StrictHostKeyChecking=no -i private_key ubuntu@${{ secrets.ATL2_HOSTNAME }} '
-            sudo rm -rf /var/www/html/aim_fe/build &&
-            sudo mv /tmp/aim_fe_build /var/www/html/aim_fe/build &&
-            cd /var/www/html/aim_fe &&
+          scp -o StrictHostKeyChecking=no -i private_key -r ./build ubuntu@${{ secrets.Bhutan_HOSTNAME }}:/tmp/bhutan_build
+          ssh -o StrictHostKeyChecking=no -i private_key ubuntu@${{ secrets.Bhutan_HOSTNAME }} '
+            cd /var/www/html/Bhutan-FE &&
             sudo git fetch origin &&
             sudo git checkout development &&
             sudo git pull origin development '
